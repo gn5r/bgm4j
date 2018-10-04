@@ -44,7 +44,7 @@ public class PCA9685 {
     
     public PCA9685(int addr) throws I2CFactory.UnsupportedBusNumberException, IOException {
         /*    RaspberryPiのI2C_BUS0に接続したと想定    */
-        this.bus = I2CFactory.getInstance(I2CBus.BUS_0);
+        this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
         /*    Addressは0x40がメイン    */
         this.motorDriver = bus.getDevice(addr);
 
@@ -69,7 +69,7 @@ public class PCA9685 {
             motorDriver.write(PRESCALE, (byte) Math.floor(preScale));
             motorDriver.write(MODE1, oldReg);
             Thread.sleep(5);
-            motorDriver.write(MODE1, (byte) (oldReg | 0xA1));
+            motorDriver.write(MODE1, (byte) (oldReg | 0x80));
         } catch (Exception e) {
         }
     }

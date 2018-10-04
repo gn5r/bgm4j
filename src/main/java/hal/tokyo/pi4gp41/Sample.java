@@ -17,7 +17,71 @@ public class Sample {
     private static int num = 0;
     private static boolean flag = true;
 
+    private static PCA9685 pca9685;
+
+    private static int n = 0;
+    private static int m = 16384/16;
+    private static boolean b = false;
+    private static boolean d = false;
+
     public static void main(String[] args) throws Exception {
+//        sample();
+
+        pca9685 = new PCA9685();
+        pca9685.setPWMFreq(60);
+        for(int i = 0; i < 16; i++){
+            servo_write(i, 0);
+        }
+        
+        Thread.sleep(1000);
+
+        while (true) {
+            servo_write(1, n);
+            servo_write(4, m);
+
+            if (n <= 16384/16 && b == false) {
+                n = n + 32;
+            } else if (b == true) {
+                n = n - 32;
+            }
+
+            if (m >= 0 && d == false) {
+                m = m - 32;
+            } else if (d == true) {
+                m = m + 32;
+            }
+
+            if (n >= 16384/16) {
+                b = true;
+            }
+            if (n <= 0) {
+                b = false;
+            }
+
+            if (m <= 0) {
+                d = true;
+            }
+            if (m >= 16384/16) {
+                d = false;
+            }
+
+            Thread.sleep(50);
+            System.out.println("Angle1:" + n + "\nAngle2:" + m);
+        }
+
+    }
+
+    private static void servo_write(int ch, int ang) {
+        ang = (int) map(ang, 0, 180, 150, 600);
+        pca9685.setPWM(ch, 0, ang);
+    }
+
+    /*    Arduino IDEでのmap関数    */
+    private static long map(long x, long in_min, long in_max, long out_min, long out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
+    private static void sample() {
         System.out.println("曲再生プログラム");
 
         Scanner scanner = new Scanner(System.in);
@@ -51,7 +115,7 @@ public class Sample {
                     nextPlay();
                     break;
 
-                    /*    再生を停止し、プログラム終了    */
+                /*    再生を停止し、プログラム終了    */
                 case "e":
                     bgmPlayer.stopBGM();
                     flag = false;
@@ -61,7 +125,6 @@ public class Sample {
                     break;
             }
         }
-
     }
 
     /*    BGM再生。Threadは毎回インスタンスを生成する    */

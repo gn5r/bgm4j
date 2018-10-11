@@ -20,7 +20,7 @@ public class Sample {
     private static PCA9685 pca9685;
 
     private static int n = 0;
-    private static int m = 16384/16;
+    private static int m = 180;
     private static boolean b = false;
     private static boolean d = false;
 
@@ -29,29 +29,29 @@ public class Sample {
 
         pca9685 = new PCA9685();
         pca9685.setPWMFreq(60);
-        for(int i = 0; i < 16; i++){
+        for (int i = 0; i < 16; i++) {
             servo_write(i, 0);
         }
-        
+
         Thread.sleep(1000);
 
         while (true) {
             servo_write(1, n);
             servo_write(4, m);
 
-            if (n <= 16384/16 && b == false) {
-                n = n + 32;
+            if (n <= 180 && b == false) {
+                n = n + 10;
             } else if (b == true) {
-                n = n - 32;
+                n = n - 10;
             }
 
             if (m >= 0 && d == false) {
-                m = m - 32;
+                m = m - 10;
             } else if (d == true) {
-                m = m + 32;
+                m = m + 10;
             }
 
-            if (n >= 16384/16) {
+            if (n >= 180) {
                 b = true;
             }
             if (n <= 0) {
@@ -61,7 +61,7 @@ public class Sample {
             if (m <= 0) {
                 d = true;
             }
-            if (m >= 16384/16) {
+            if (m >= 0) {
                 d = false;
             }
 

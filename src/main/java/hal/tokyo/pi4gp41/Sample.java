@@ -61,7 +61,7 @@ public class Sample {
             if (m <= 0) {
                 d = true;
             }
-            if (m >= 0) {
+            if (m >= 180) {
                 d = false;
             }
 

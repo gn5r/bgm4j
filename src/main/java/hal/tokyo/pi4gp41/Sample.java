@@ -111,17 +111,15 @@ public class Sample {
                 int servoAng = 0;
                 /*    レベルに応じたBGMの再生    */
 
+                /*    照明変更    */
+                light1.high();
+                light2.high();
+                
                 /*    BGMが終了するまで演出    */
-                while (bgmPlayer.getSize() != -1) {
-                    servoAng += 10;
-                    servo_write(0, servoAng);
-                    Thread.sleep(100);
-                    
-                    /*    SE発生    */
-                }
+                while (bgmPlayer.getSize() != -1);
                 
-                /*    BGM停止    */
-                
+                light1.toggle();
+                light2.toggle();
                 break;
 
             case 1:
@@ -135,6 +133,8 @@ public class Sample {
 
             default:
                 break;
+
+            /*    BGM停止    */
         }
     }
 

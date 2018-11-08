@@ -33,11 +33,21 @@ public class Sample {
     public static void main(String[] args) throws Exception {
         Init();
 
-        /*    */
         while (true) {
-            System.out.println("wait...");
-            Thread.sleep(500);
+            BGMStart("level0");
+
+            /*    ゲーム結果受信待機    */
+            while (flag) {
+
+                Thread.sleep(500);
+            }
+
+            bgmPlayer.stopBGM();
+
+            mainPerform();
+            motorReset();
         }
+
     }
 
     /*    初期化    */
@@ -70,7 +80,7 @@ public class Sample {
         /*    モータの初期位置を0にセット    */
         pca9685 = new PCA9685();
         pca9685.setPWMFreq(60);
-//        motorReset();
+        motorReset();
     }
 
     /*    モーターリセット    */

@@ -28,9 +28,12 @@ public class BGMPlayer extends Thread {
     private File file;
 
     private boolean flag;
+    
+    private int size;
 
     public BGMPlayer(String fileName) {
         this.file = new File(fileName + ".wav");
+        this.size = -1;
     }
 
     @Override
@@ -44,13 +47,12 @@ public class BGMPlayer extends Thread {
             this.boothBGM = (SourceDataLine) AudioSystem.getLine(this.dataLine);
             this.boothBGM.open();
             this.boothBGM.start();
-            int size = -1;
             this.data = new byte[this.boothBGM.getBufferSize()];
 
             while (true) {
-                size = this.ais.read(this.data);
+                this.size = this.ais.read(this.data);
 
-                if (size == -1) {
+                if (this.size == -1) {
                     ais.close();
                     ais = AudioSystem.getAudioInputStream(this.file);
                     continue;
@@ -79,5 +81,9 @@ public class BGMPlayer extends Thread {
         this.boothBGM.stop();
         this.boothBGM.close();
 
+    }
+    
+    public int getSize(){
+        return this.size;
     }
 }

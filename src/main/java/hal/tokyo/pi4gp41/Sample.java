@@ -85,7 +85,7 @@ public class Sample {
 
     /*    モーターリセット    */
     private static void motorReset() {
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 2; i++) {
             servo_write(i, 0);
         }
     }
@@ -104,9 +104,24 @@ public class Sample {
         Sample.level = level;
     }
 
-    private static void mainPerform() {
+    private static void mainPerform() throws Exception {
         switch (Sample.level) {
             case 0:
+
+                int servoAng = 0;
+                /*    レベルに応じたBGMの再生    */
+
+                /*    BGMが終了するまで演出    */
+                while (bgmPlayer.getSize() != -1) {
+                    servoAng += 10;
+                    servo_write(0, servoAng);
+                    Thread.sleep(100);
+                    
+                    /*    SE発生    */
+                }
+                
+                /*    BGM停止    */
+                
                 break;
 
             case 1:

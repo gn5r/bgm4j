@@ -108,18 +108,21 @@ public class Sample {
         switch (Sample.level) {
             case 0:
 
-                int servoAng = 0;
                 /*    レベルに応じたBGMの再生    */
-
-                /*    照明変更    */
+                BGMStart("level0");
+                
+                /*    照明点灯    */
                 light1.high();
                 light2.high();
-                
+
                 /*    BGMが終了するまで演出    */
-                while (bgmPlayer.getSize() != -1);
-                
-                light1.toggle();
-                light2.toggle();
+                while (bgmPlayer.getSize() != -1) {
+                    ;
+                }
+
+                /*    照明消灯    */
+                light1.low();
+                light2.low();
                 break;
 
             case 1:
@@ -134,8 +137,10 @@ public class Sample {
             default:
                 break;
 
-            /*    BGM停止    */
         }
+        
+        /*    BGM停止    */
+        bgmPlayer.stopBGM();
     }
 
     /*    BGM再生。Threadは毎回インスタンスを生成する    */

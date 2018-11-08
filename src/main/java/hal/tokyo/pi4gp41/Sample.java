@@ -85,7 +85,7 @@ public class Sample {
 
     /*    モーターリセット    */
     private static void motorReset() {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             servo_write(i, 0);
         }
     }
@@ -110,7 +110,7 @@ public class Sample {
 
                 /*    レベルに応じたBGMの再生    */
                 BGMStart("level0");
-                
+
                 /*    照明点灯    */
                 light1.high();
                 light2.high();
@@ -126,6 +126,27 @@ public class Sample {
                 break;
 
             case 1:
+                int fishGroup1 = 0;
+                int fidhGroup2 = 0;
+
+                /*    レベルに応じたBGMの再生    */
+                BGMStart("level1");
+
+                /*    照明点灯    */
+                light2.high();
+
+                /*    BGMが終了するまで演出    */
+                while (bgmPlayer.getSize() != -1) {
+                    fishGroup1 += 10;
+                    fidhGroup2 += 20;
+                    servo_write(0, fishGroup1);
+                    servo_write(1, fidhGroup2);
+
+                    Thread.sleep(500);
+                }
+
+                light2.low();
+
                 break;
 
             case 2:
@@ -138,7 +159,7 @@ public class Sample {
                 break;
 
         }
-        
+
         /*    BGM停止    */
         bgmPlayer.stopBGM();
     }

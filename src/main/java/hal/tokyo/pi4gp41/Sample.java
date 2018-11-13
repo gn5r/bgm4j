@@ -27,52 +27,22 @@ public class Sample {
 
     public static void main(String[] args) throws Exception {
         Init();
-        int n = 0;
-        boolean b = false;
-
-        for (int i = 0; i < 16; i++) {
-            servo_write(i, n);
-        }
-
-        Thread.sleep(1000);
 
         while (true) {
+            BGMStart("level0");
 
-            System.out.println("光の強さ:" + String.valueOf(n));
-            servo_write(0, n);
-
-            if (n <= 180 && b == false) {
-                n = n + 10;
-            } else if (b == true) {
-                n = n - 10;
+            /*    ゲーム結果受信待機    */
+            while (true) {
+                Thread.sleep(1000);
+                if ((level = arduinoMega.read()) != 0) {
+                    break;
+                }
             }
 
-            if (n >= 180) {
-                b = true;
-            }
-            if (n <= -50) {
-                b = false;
-            }
+            bgmPlayer.stopBGM();
 
-            Thread.sleep(50);
+            mainPerform();
         }
-
-//        while (true) {
-//            BGMStart("level0");
-//
-//            /*    ゲーム結果受信待機    */
-//            while (true) {
-//                if (arduinoMega.read() != -1) {
-//                    level = arduinoMega.read();
-//                    break;
-//                }
-//                Thread.sleep(500);
-//            }
-//
-//            bgmPlayer.stopBGM();
-//
-//            mainPerform();
-//        }
     }
 
     /*    初期化    */
@@ -122,7 +92,7 @@ public class Sample {
                 BGMStart("level0");
 
                 /*    照明点灯    海:赤*/
-                seaWHITE.high();
+                seaRED.high();
 
                 /*    BGMが終了するまで演出    */
                 while (bgmPlayer.getSize() != -1) {
@@ -131,7 +101,6 @@ public class Sample {
 
                 /*    照明消灯    */
                 seaRED.low();
-                seaWHITE.low();
                 break;
 
             case 1:
@@ -142,17 +111,46 @@ public class Sample {
                 /*    照明点灯
                       海:白
                       カニ:白    */
-                seaRED.high();
+                seaWHITE.high();
+                crabWHITE.high();
 
                 /*    BGMが終了するまで演出    */
                 seaWHITE.low();
-
+                crabWHITE.low();
                 break;
 
             case 2:
+
+                /*    レベルに応じたBGMの再生    */
+                BGMStart("level2");
+
+                /*    照明点灯
+                      海:白
+                      カニ:RED    */
+                seaWHITE.high();
+                crabRED.high();
+
+                /*    BGMが終了するまで演出    */
+                seaWHITE.low();
+                crabRED.low();
+
                 break;
 
             case 3:
+
+                /*    レベルに応じたBGMの再生    */
+                BGMStart("level3");
+
+                /*    照明点灯
+                      海:白
+                      カニ:RED    */
+                seaWHITE.high();
+                crabRED.high();
+
+                /*    BGMが終了するまで演出    */
+                seaWHITE.low();
+                crabRED.low();
+
                 break;
 
             default:
@@ -165,8 +163,31 @@ public class Sample {
     }
 
     /*    サンゴLED点灯パターンメソッド    */
-    private static void coral_LED() {
+    private static void coral_LED() throws InterruptedException {
 
+        int n = 0;
+        boolean b = false;
+
+        while (true) {
+
+            System.out.println("光の強さ:" + String.valueOf(n));
+            servo_write(0, n);
+
+            if (n <= 180 && b == false) {
+                n = n + 10;
+            } else if (b == true) {
+                n = n - 10;
+            }
+
+            if (n >= 180) {
+                b = true;
+            }
+            if (n <= -50) {
+                b = false;
+            }
+
+            Thread.sleep(50);
+        }
     }
 
     /*    引数にピン番号 角度    */

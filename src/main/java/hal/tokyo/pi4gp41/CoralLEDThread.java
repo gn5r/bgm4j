@@ -25,32 +25,26 @@ public class CoralLEDThread extends Thread {
     @Override
     public void run() {
 
-        try {
-            boolean b = false;
-
-            while (true) {
-                Sample.servo_write(this.ch, this.pwmValue);
-
-                if (this.pwmValue <= this.maxValue && b == false) {
-                    this.pwmValue = this.pwmValue + 16;
-                } else if (b == true) {
-                    this.pwmValue = this.pwmValue - 16;
-                }
-
-                if (this.pwmValue >= this.maxValue) {
-                    b = true;
-                }
-                if (this.pwmValue <= 0) {
-                    b = false;
-                }
-                Thread.sleep(20);
-
-                if (!flag) {
-                    break;
-                }
+        boolean b = false;
+        while (true) {
+            Sample.servo_write(this.ch, this.pwmValue,this.maxValue);
+            
+            if (this.pwmValue <= this.maxValue && b == false) {
+                this.pwmValue = this.pwmValue + 16;
+            } else if (b == true) {
+                this.pwmValue = this.pwmValue - 16;
             }
-
-        } catch (InterruptedException e) {
+            
+            if (this.pwmValue >= this.maxValue) {
+                b = true;
+            }
+            if (this.pwmValue <= 0) {
+                b = false;
+            }
+            
+            System.out.println("value:" + String.valueOf(this.pwmValue));
+            if (!this.flag)break;
+            
         }
     }
 
@@ -62,5 +56,13 @@ public class CoralLEDThread extends Thread {
 
     public void LEDOFF() {
         this.flag = false;
+    }
+    
+    private synchronized void delay(long ms){
+        try{
+            wait(ms);
+        }catch(InterruptedException e){
+            
+        }
     }
 }

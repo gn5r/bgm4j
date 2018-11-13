@@ -17,6 +17,7 @@ import java.io.IOException;
 public class PCA9685 {
 
     public final static int PCA9685_ADDRESS = 0x40;
+    public final static int PCA9685_SUB = 0x43;
 
     public final static int MODE1 = 0x00;
 

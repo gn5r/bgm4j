@@ -16,31 +16,31 @@ import com.pi4j.io.gpio.RaspiPin;
  * @author gn5r
  */
 public class Sample {
-
+    
     private static PCA9685 pca9685;
     private static ArduinoMega arduinoMega;
     private static BGMPlayer bgmPlayer;
     private static CoralLEDThread coralLED1, coralLED2, coralLED3;
-
+    
     private static GpioController gpio;
     private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE;
     private static int level;
-
+    
     public static void main(String[] args) throws Exception {
 //        Init();
 
         /*    サンゴLED用インスタンス生成    */
         pca9685 = new PCA9685();
         pca9685.setPWMFreq(60);
-
+        
         while (true) {
             startBGM("Level_0");
-
+            
             System.out.println("ゲーム結果受信待機中...");
             Thread.sleep(5000);
             Sample.level = 1;
             System.out.println("キレイドは1です");
-
+            
             bgmPlayer.stopBGM();
             deleteBGM();
             Thread.sleep(1000);
@@ -72,27 +72,27 @@ public class Sample {
          */
         seaRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_22, "Light1", PinState.LOW);
         seaRED.setShutdownOptions(true, PinState.LOW);
-
+        
         seaWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_23, "Light2", PinState.LOW);
         seaWHITE.setShutdownOptions(true, PinState.LOW);
-
+        
         crabRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_24, "Light3", PinState.LOW);
         crabRED.setShutdownOptions(true, PinState.LOW);
-
+        
         crabWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "Light4", PinState.LOW);
         crabWHITE.setShutdownOptions(true, PinState.LOW);
 
         /*    サンゴLED用インスタンス生成    */
         pca9685 = new PCA9685();
         pca9685.setPWMFreq(60);
-
+        
     }
 
     /*    メイン演出メソッド    */
     private static void mainPerform() throws Exception {
-
+        
         System.out.println("main Performance");
-
+        
         switch (Sample.level) {
             case 0:
 
@@ -113,7 +113,7 @@ public class Sample {
                 /*    照明消灯    */
 //                seaRED.low();
                 break;
-
+            
             case 1:
 
                 /*    レベルに応じたBGMの再生    */
@@ -129,15 +129,16 @@ public class Sample {
                 while (true) {
                     Thread.sleep(1000);
                     if (bgmPlayer.getSize() == -1) {
+                        coralLEDOFF(1);
                         break;
                     }
-                    coralLEDON(1,0, 1024, 6);
+                    coralLEDON(1, 0, 1024, 6);
                     deleteCoral(1);
                 }
 //                seaWHITE.low();
 //                crabWHITE.low();
                 break;
-
+            
             case 2:
 
                 /*    レベルに応じたBGMの再生    */
@@ -159,9 +160,9 @@ public class Sample {
                 }
                 seaWHITE.low();
                 crabRED.low();
-
+                
                 break;
-
+            
             case 3:
 
                 /*    レベルに応じたBGMの再生    */
@@ -182,9 +183,9 @@ public class Sample {
                 }
                 seaWHITE.low();
                 crabRED.low();
-
+                
                 break;
-
+            
             default:
                 break;
         }
@@ -219,7 +220,7 @@ public class Sample {
 
     /*    coralLED ON    */
     private static void coralLEDON(int coralNum, int pwmValue, int maxVale, int ch) {
-
+        
         switch (coralNum) {
             case 1:
                 coralLED1 = new CoralLEDThread(pwmValue, maxVale, ch);
@@ -233,7 +234,24 @@ public class Sample {
                 coralLED3 = new CoralLEDThread(pwmValue, maxVale, ch);
                 coralLED3.LEDON();
                 break;
-
+            
+            default:
+                break;
+        }
+    }
+    
+    private static void coralLEDOFF(int coralNum) {
+        switch (coralNum) {
+            case 1:
+                coralLED1.LEDOFF();
+                break;
+            case 2:
+                coralLED2.LEDOFF();
+                break;
+            case 3:
+                coralLED3.LEDOFF();
+                break;
+            
             default:
                 break;
         }
@@ -251,10 +269,10 @@ public class Sample {
             case 3:
                 coralLED3 = null;
                 break;
-
+            
             default:
                 break;
         }
     }
-
+    
 }

@@ -60,7 +60,7 @@ public class CoralLEDThread extends Thread {
         start();
     }
 
-    public void stopLED() {
+    public void LEDOFF() {
         this.flag = false;
     }
 }

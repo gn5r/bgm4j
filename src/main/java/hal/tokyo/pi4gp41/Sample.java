@@ -183,8 +183,10 @@ public class Sample {
                     LEDON(flag);
                     if (bgmPlayer.getSize() == -1) {
                         flag = false;
+                        LEDON(flag);
                         break;
                     }
+                    
                 }
 //                seaWHITE.low();
 //                crabRED.low();
@@ -203,42 +205,78 @@ public class Sample {
     private static void LEDON(boolean flag) throws InterruptedException {
         int pwm1 = 0;
         int pwm2 = 512;
-        int pwm3 = 2048;
+        int pwm3 = 1024;
 
-        boolean b = false;
+        boolean b1 = false;
+        boolean b2 = false;
+        boolean b3 = false;
 
-        while (true) {
+        System.out.println("Coral LED ON");
+
+        while (flag) {
             switch (Sample.level) {
                 case 1:
-                    Sample.servo_write(1, pwm1, 2048);
+                    Sample.servo_write(1, pwm1, 4096);
                     break;
 
                 case 2:
-                    Sample.servo_write(1, pwm1, 2048);
+                    Sample.servo_write(1, pwm1, 4096);
                     Thread.sleep(50);
-                    Sample.servo_write(2, pwm2, 2048);
+                    Sample.servo_write(2, pwm2, 4096);
                     break;
 
                 case 3:
-                    Sample.servo_write(8, pwm1, 2048);
-                    Sample.servo_write(9, pwm2, 2048);
-                    Sample.servo_write(10, pwm3, 2048);
+                    Sample.servo_write(8, pwm1, 4096);
+                    Sample.servo_write(9, pwm2, 4096);
+                    Sample.servo_write(10, pwm3, 4096);
                     break;
             }
 
-            pwmCalc(pwm1, 2048);
-            pwmCalc(pwm2, 2048);
-            pwmCalc(pwm3, 2048);
-
-            if (!flag) {
-                break;
+            if (pwm1 <= 4096 -32  && b1 == false) {
+                pwm1 += 32;
+            } else if (b1 == true) {
+                pwm1 -= 32;
             }
+            if (pwm1 >= 4096 -32) {
+                b1 = true;
+            }
+            if (pwm1 <= 32) {
+                b1 = false;
+            }
+
+            if (pwm2 <= 180 && b2 == false) {
+                pwm2 += 10;
+            } else if (b2 == true) {
+                pwm2 -= 10;
+            }
+            if (pwm2 >= 180) {
+                b2 = true;
+            }
+            if (pwm2 <= 0) {
+                b2 = false;
+            }
+
+            if (pwm3 <= 180 && b3 == false) {
+                pwm3 += 10;
+            } else if (b3 == true) {
+                pwm3 -= 10;
+            }
+            if (pwm3 >= 180) {
+                b3 = true;
+            }
+            if (pwm3 <= 0) {
+                b3 = false;
+            }
+
+            System.out.println("pwm1:" + pwm1 + "\npwm2:" + pwm2 + "\npwm3:" + pwm3);
+            System.out.println("\nb1:" + b1 + "\nb2:" + b2 + "\nb3:" + b3);
+            Thread.sleep(50);
         }
     }
 
     /*    サンゴLED点灯パターンメソッド    */
     public static void servo_write(int ch, int ang, int maxValue) {
-        ang = (int) map(ang, 0, maxValue, 150, 600);
+//        ang = (int) map(ang, 0, maxValue, 150, 600);
         pca9685.setPWM(ch, 0, ang);
     }
 
@@ -256,34 +294,6 @@ public class Sample {
     /*    古いBGMPlayerインスタンスを削除    */
     private static void deleteBGM() {
         Sample.bgmPlayer = null;
-    }
-
-    private static void pwmCalc(int pwm, int max) {
-
-        if (pwm <= max) {
-            pwm += 16;
-        } else if (pwm >= max) {
-            pwm -= 16;
-        }
-    }
-
-    private void calc() {
-
-        int n = 0;
-        boolean b = false;
-
-        if (n <= 2048 && b == false) {
-            n = n + 32;
-        } else if (b == true) {
-            n = n - 32;
-        }
-
-        if (n >= 2048) {
-            b = true;
-        }
-        if (n <= 0) {
-            b = false;
-        }
     }
 
 }

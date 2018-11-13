@@ -20,6 +20,7 @@ public class Sample {
     private static PCA9685 pca9685;
     private static ArduinoMega arduinoMega;
     private static BGMPlayer bgmPlayer;
+    private static CoralLEDThread coralLED1, coralLED2, coralLED3;
 
     private static GpioController gpio;
     private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE;
@@ -28,23 +29,24 @@ public class Sample {
     public static void main(String[] args) throws Exception {
 //        Init();
 
+        /*    サンゴLED用インスタンス生成    */
+        pca9685 = new PCA9685();
+        pca9685.setPWMFreq(60);
+
         while (true) {
-            BGMStart("level0");
+            startBGM("Level_0");
 
-            /*    ゲーム結果受信待機    */
-//            while (true) {
-//                Thread.sleep(1000);
-//                if ((level = arduinoMega.read()) != 0) {
-//                    break;
-//                }
-//            }
             System.out.println("ゲーム結果受信待機中...");
-            Thread.sleep(3000);
-            level = 1;
+            Thread.sleep(5000);
+            Sample.level = 1;
             System.out.println("キレイドは1です");
-            bgmPlayer.stopBGM();
 
+            bgmPlayer.stopBGM();
+            deleteBGM();
+            Thread.sleep(1000);
             mainPerform();
+            System.out.println("次のゲームへ移行します。");
+            Thread.sleep(2000);
         }
     }
 
@@ -88,32 +90,34 @@ public class Sample {
 
     /*    メイン演出メソッド    */
     private static void mainPerform() throws Exception {
+
+        System.out.println("main Performance");
+
         switch (Sample.level) {
             case 0:
 
                 /*    レベルに応じたBGMの再生    */
-                BGMStart("level_0");
+                startBGM("Level_0");
 
                 /*    照明点灯    海:赤*/
-                seaRED.high();
+//                seaRED.high();
 
                 /*    BGMが終了するまで演出    */
                 while (true) {
                     Thread.sleep(1000);
                     if (bgmPlayer.getSize() == -1) {
-                        bgmPlayer.stopBGM();
                         break;
                     }
                 }
 
                 /*    照明消灯    */
-                seaRED.low();
+//                seaRED.low();
                 break;
 
             case 1:
 
                 /*    レベルに応じたBGMの再生    */
-                BGMStart("level_1");
+                startBGM("Level_1");
 
                 /*    照明点灯
                       海:白
@@ -125,9 +129,10 @@ public class Sample {
                 while (true) {
                     Thread.sleep(1000);
                     if (bgmPlayer.getSize() == -1) {
-                        bgmPlayer.stopBGM();
                         break;
                     }
+                    coralLEDON(1,0, 1024, 6);
+                    deleteCoral(1);
                 }
 //                seaWHITE.low();
 //                crabWHITE.low();
@@ -136,7 +141,7 @@ public class Sample {
             case 2:
 
                 /*    レベルに応じたBGMの再生    */
-                BGMStart("level_2");
+                startBGM("Level_2");
 
                 /*    照明点灯
                       海:白
@@ -160,7 +165,7 @@ public class Sample {
             case 3:
 
                 /*    レベルに応じたBGMの再生    */
-                BGMStart("level_3");
+                startBGM("Level_3");
 
                 /*    照明点灯
                       海:白
@@ -172,7 +177,6 @@ public class Sample {
                 while (true) {
                     Thread.sleep(1000);
                     if (bgmPlayer.getSize() == -1) {
-                        bgmPlayer.stopBGM();
                         break;
                     }
                 }
@@ -183,44 +187,17 @@ public class Sample {
 
             default:
                 break;
-
         }
 
         /*    BGM停止    */
         bgmPlayer.stopBGM();
+        deleteBGM();
     }
 
     /*    サンゴLED点灯パターンメソッド    */
-    private static void coral_LED() throws InterruptedException {
-
-        int n = 0;
-        boolean b = false;
-
-        while (true) {
-
-            System.out.println("光の強さ:" + String.valueOf(n));
-            servo_write(0, n);
-
-            if (n <= 180 && b == false) {
-                n = n + 10;
-            } else if (b == true) {
-                n = n - 10;
-            }
-
-            if (n >= 180) {
-                b = true;
-            }
-            if (n <= -50) {
-                b = false;
-            }
-
-            Thread.sleep(50);
-        }
-    }
-
-    /*    引数にピン番号 角度    */
-    private static void servo_write(int ch, int ang) {
-        ang = (int) map(ang, 0, 360, 150, 600);
+ /*    引数にピン番号 角度    */
+    public static void servo_write(int ch, int ang) {
+        ang = (int) map(ang, 0, 1024, 150, 600);
         pca9685.setPWM(ch, 0, ang);
     }
 
@@ -230,17 +207,54 @@ public class Sample {
     }
 
     /*    BGM再生。Threadは毎回インスタンスを生成する    */
-    private static void BGMStart(String fileName) {
+    private static void startBGM(String fileName) {
         bgmPlayer = new BGMPlayer("BGM/" + fileName);
         bgmPlayer.musicPlay();
     }
 
-    /*    次の曲へ変更。古いインスタンスを使いBGMをストップさせないと例外が発生    */
-    private static void nextPlay() {
+    /*    delete old BGMPlayer instance    */
+    private static void deleteBGM() {
+        Sample.bgmPlayer = null;
+    }
 
-        bgmPlayer.stopBGM();
-        BGMStart("Level0");
+    /*    coralLED ON    */
+    private static void coralLEDON(int coralNum, int pwmValue, int maxVale, int ch) {
 
+        switch (coralNum) {
+            case 1:
+                coralLED1 = new CoralLEDThread(pwmValue, maxVale, ch);
+                coralLED1.LEDON();
+                break;
+            case 2:
+                coralLED2 = new CoralLEDThread(pwmValue, maxVale, ch);
+                coralLED2.LEDON();
+                break;
+            case 3:
+                coralLED3 = new CoralLEDThread(pwmValue, maxVale, ch);
+                coralLED3.LEDON();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /*    delete old BGMPlayer instance    */
+    private static void deleteCoral(int coralNum) {
+        switch (coralNum) {
+            case 1:
+                coralLED1 = null;
+                break;
+            case 2:
+                coralLED2 = null;
+                break;
+            case 3:
+                coralLED3 = null;
+                break;
+
+            default:
+                break;
+        }
     }
 
 }

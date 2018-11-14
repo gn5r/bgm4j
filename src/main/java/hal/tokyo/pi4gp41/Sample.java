@@ -42,20 +42,23 @@ public class Sample {
         pca9685.setPWMFreq(60);
 
         while (true) {
+            System.out.println("BGM start");
             startBGM("Level_0");
             System.out.println("ゲーム結果受信待機中...");
 
             while (true) {
-                Thread.sleep(1000);
                 if (arduinoMega.read() != 0) {
                     level = arduinoMega.read() - 1;
                     break;
                 }
             }
+            Thread.sleep(1000);
             bgmPlayer.stopBGM();
-            deleteBGM();
+            System.out.println("BGM stop");
+            OEPin.low();
             Thread.sleep(1000);
             mainPerform();
+            OEPin.high();
             System.out.println("次のゲームへ移行します。");
             Thread.sleep(2000);
         }
@@ -200,7 +203,6 @@ public class Sample {
 
         /*    BGM停止    */
         bgmPlayer.stopBGM();
-        deleteBGM();
 
         /*    サンゴリセット    */
         resetCoralLED();
@@ -280,15 +282,9 @@ public class Sample {
         bgmPlayer.musicPlay();
     }
 
-    /*    古いBGMPlayerインスタンスを削除    */
-    private static void deleteBGM() {
-        Sample.bgmPlayer = null;
-    }
-
     /*    サンゴLEDリセットメソッド    */
     private static void resetCoralLED() {
-        /*    モータードライバのOEピンをhighにすることでリセット    */
-        OEPin.high();
+        System.out.println("motor driver reset...");
 
         /*    値初期化    */
         coral1 = 0;
@@ -299,7 +295,6 @@ public class Sample {
         coral2_flg = false;
         coral3_flg = false;
 
-        OEPin.low();
     }
 
 }

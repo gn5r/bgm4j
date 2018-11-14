@@ -41,7 +41,7 @@ public class PCA9685 {
 
     /*    コンストラクタ    */
     public PCA9685() throws I2CFactory.UnsupportedBusNumberException, IOException {
-        this(PCA9685_ADDRESS);
+        this(PCA9685_SUB);
     }
 
     /*    privateコンストラクタ    */

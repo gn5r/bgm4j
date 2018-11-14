@@ -25,6 +25,14 @@ public class Sample {
     private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE;
     private static int level;
 
+    private static int pwm1 = 0;
+    private static int pwm2 = 1024;
+    private static int pwm3 = 2048;
+
+    private static boolean b1 = false;
+    private static boolean b2 = false;
+    private static boolean b3 = false;
+
     public static void main(String[] args) throws Exception {
 //        Init();
 
@@ -91,7 +99,6 @@ public class Sample {
     private static void mainPerform() throws Exception {
 
         System.out.println("main Performance");
-        boolean flag = true;
 
         switch (Sample.level) {
             case 0:
@@ -131,10 +138,9 @@ public class Sample {
                     if (bgmPlayer.getSize() == -1) {
 //                        coralLEDOFF(1);
 //                        deleteCoral(1);
-                        flag = false;
                         break;
                     }
-                    LEDON(flag);
+                    LEDON();
 
 //                    coralLEDON(1, 0, 1024, 6);                    
                 }
@@ -157,7 +163,6 @@ public class Sample {
                 while (true) {
                     Thread.sleep(1000);
                     if (bgmPlayer.getSize() == -1) {
-                        bgmPlayer.stopBGM();
                         break;
                     }
                 }
@@ -179,18 +184,14 @@ public class Sample {
 
                 /*    BGMが終了するまで演出    */
                 while (true) {
-                    Thread.sleep(1000);
-                    LEDON(flag);
                     if (bgmPlayer.getSize() == -1) {
-                        flag = false;
-                        LEDON(flag);
                         break;
                     }
-                    
+                    LEDON();
+                    Thread.sleep(100);
                 }
 //                seaWHITE.low();
 //                crabRED.low();
-
                 break;
 
             default:
@@ -202,76 +203,66 @@ public class Sample {
         deleteBGM();
     }
 
-    private static void LEDON(boolean flag) throws InterruptedException {
-        int pwm1 = 0;
-        int pwm2 = 512;
-        int pwm3 = 1024;
-
-        boolean b1 = false;
-        boolean b2 = false;
-        boolean b3 = false;
+    private static void LEDON() throws InterruptedException {
 
         System.out.println("Coral LED ON");
 
-        while (flag) {
-            switch (Sample.level) {
-                case 1:
-                    Sample.servo_write(1, pwm1, 4096);
-                    break;
+        switch (Sample.level) {
+            case 1:
+                Sample.servo_write(1, pwm1, 4096);
+                break;
 
-                case 2:
-                    Sample.servo_write(1, pwm1, 4096);
-                    Thread.sleep(50);
-                    Sample.servo_write(2, pwm2, 4096);
-                    break;
+            case 2:
+                Sample.servo_write(1, pwm1, 4096);
+                Thread.sleep(50);
+                Sample.servo_write(2, pwm2, 4096);
+                break;
 
-                case 3:
-                    Sample.servo_write(8, pwm1, 4096);
-                    Sample.servo_write(9, pwm2, 4096);
-                    Sample.servo_write(10, pwm3, 4096);
-                    break;
-            }
-
-            if (pwm1 <= 4096 -32  && b1 == false) {
-                pwm1 += 32;
-            } else if (b1 == true) {
-                pwm1 -= 32;
-            }
-            if (pwm1 >= 4096 -32) {
-                b1 = true;
-            }
-            if (pwm1 <= 32) {
-                b1 = false;
-            }
-
-            if (pwm2 <= 180 && b2 == false) {
-                pwm2 += 10;
-            } else if (b2 == true) {
-                pwm2 -= 10;
-            }
-            if (pwm2 >= 180) {
-                b2 = true;
-            }
-            if (pwm2 <= 0) {
-                b2 = false;
-            }
-
-            if (pwm3 <= 180 && b3 == false) {
-                pwm3 += 10;
-            } else if (b3 == true) {
-                pwm3 -= 10;
-            }
-            if (pwm3 >= 180) {
-                b3 = true;
-            }
-            if (pwm3 <= 0) {
-                b3 = false;
-            }
-
-            System.out.println("pwm1:" + pwm1 + "\npwm2:" + pwm2 + "\npwm3:" + pwm3);
-            System.out.println("\nb1:" + b1 + "\nb2:" + b2 + "\nb3:" + b3);
-            Thread.sleep(50);
+            case 3:
+                Sample.servo_write(8, pwm1, 4096);
+                Sample.servo_write(9, pwm2, 4096);
+                Sample.servo_write(10, pwm3, 4096);
+                break;
         }
+
+        if (pwm1 <= 4096 && b1 == false) {
+            pwm1 += 128;
+        } else if (b1 == true) {
+            pwm1 -= 128;
+        }
+        if (pwm1 >= 4096 - 128) {
+            b1 = true;
+        }
+        if (pwm1 <= 0) {
+            b1 = false;
+        }
+
+        if (pwm2 <= 4096 && b2 == false) {
+            pwm2 += 128;
+        } else if (b2 == true) {
+            pwm2 -= 128;
+        }
+        if (pwm2 >= 4096 - 128) {
+            b2 = true;
+        }
+        if (pwm2 <= 0) {
+            b2 = false;
+        }
+
+        if (pwm3 <= 4096 && b3 == false) {
+            pwm3 += 256;
+        } else if (b3 == true) {
+            pwm3 -= 256;
+        }
+        if (pwm3 >= 4096 - 256) {
+            b3 = true;
+        }
+        if (pwm3 <= 0) {
+            b3 = false;
+        }
+
+        System.out.println("pwm1:" + pwm1 + "\npwm2:" + pwm2 + "\npwm3:" + pwm3);
+        System.out.println("b1:" + b1 + "\nb2:" + b2 + "\nb3:" + b3 );
     }
 
     /*    サンゴLED点灯パターンメソッド    */

@@ -85,14 +85,14 @@ public class Sample {
                  引数はレジスタアドレス
         
          */
-        arduinoMega = new ArduinoMega(0x41);
+        arduinoMega = new ArduinoMega();
 
         /*    照明用ピン    
         
         light1:ブース全体 白
         light2:ブース全体 赤
         light3:カニ本体 白
-        light4:カニ本体赤
+        light4:カニ本体 赤
         
          */
         light1 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_22, "Light1", PinState.LOW);

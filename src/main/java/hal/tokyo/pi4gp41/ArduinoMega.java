@@ -16,25 +16,25 @@ import java.io.IOException;
  */
 public class ArduinoMega {
 
+    /*    ArduinoMegaのスレーブアドレス    */
+    private static final int MEGA_ADDRESS = 0x20;
+
     /*    I2C通信用のグローバル変数    */
     private I2CBus bus;
     private I2CDevice device;
 
-    /*    スレーブアドレス    */
-    private int addr;
-
     /*    コンストラクタ    */
-    public ArduinoMega(int addr) throws I2CFactory.UnsupportedBusNumberException, IOException {
-        this.addr = addr;
+    public ArduinoMega() throws I2CFactory.UnsupportedBusNumberException, IOException {
+        this(MEGA_ADDRESS);
     }
 
     /*    privateコンストラクタ    */
-    private ArduinoMega() throws I2CFactory.UnsupportedBusNumberException, IOException {
+    private ArduinoMega(int addr) throws I2CFactory.UnsupportedBusNumberException, IOException {
         /*     ラズパイのI2C_BUS1に接続したと仮定    */
         this.bus = I2CFactory.getInstance(I2CBus.BUS_1);
 
         /*    ArduinoMegaのアドレスはターミナルから検索可能    */
-        this.device = bus.getDevice(this.addr);
+        this.device = bus.getDevice(addr);
     }
 
     /*    データ読み取りメソッド    */

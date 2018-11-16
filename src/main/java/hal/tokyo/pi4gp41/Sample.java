@@ -22,7 +22,7 @@ public class Sample {
     private static BGMPlayer bgmPlayer;
 
     private static GpioController gpio;
-    private static GpioPinDigitalOutput light1, light2, light3, light4;
+    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE;
     private static int level;
 
     public static void main(String[] args) throws Exception {
@@ -95,17 +95,17 @@ public class Sample {
         light4:カニ本体 赤
         
          */
-        light1 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_22, "Light1", PinState.LOW);
-        light1.setShutdownOptions(true, PinState.LOW);
+        seaRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_22, "Light1", PinState.LOW);
+        seaRED.setShutdownOptions(true, PinState.LOW);
 
-        light2 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_23, "Light2", PinState.LOW);
-        light2.setShutdownOptions(true, PinState.LOW);
+        seaWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_23, "Light2", PinState.LOW);
+        seaWHITE.setShutdownOptions(true, PinState.LOW);
 
-        light3 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_24, "Light3", PinState.LOW);
-        light3.setShutdownOptions(true, PinState.LOW);
+        crabRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_24, "Light3", PinState.LOW);
+        crabRED.setShutdownOptions(true, PinState.LOW);
 
-        light4 = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "Light4", PinState.LOW);
-        light4.setShutdownOptions(true, PinState.LOW);
+        crabWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "Light4", PinState.LOW);
+        crabWHITE.setShutdownOptions(true, PinState.LOW);
 
         /*    サンゴLED用インスタンス生成    */
         pca9685 = new PCA9685();
@@ -121,9 +121,8 @@ public class Sample {
                 /*    レベルに応じたBGMの再生    */
                 BGMStart("level0");
 
-                /*    照明点灯    */
-                light1.high();
-                light2.high();
+                /*    照明点灯    海:赤*/
+                seaWHITE.high();
 
                 /*    BGMが終了するまで演出    */
                 while (bgmPlayer.getSize() != -1) {
@@ -131,29 +130,22 @@ public class Sample {
                 }
 
                 /*    照明消灯    */
-                light1.low();
-                light2.low();
+                seaRED.low();
+                seaWHITE.low();
                 break;
 
             case 1:
-                int fishGroup1 = 0;
-                int fishGroup2 = 0;
 
                 /*    レベルに応じたBGMの再生    */
                 BGMStart("level1");
 
-                /*    照明点灯    */
-                light2.high();
+                /*    照明点灯
+                      海:白
+                      カニ:白    */
+                seaRED.high();
 
                 /*    BGMが終了するまで演出    */
-                while (bgmPlayer.getSize() != -1) {
-                    fishGroup1 += 10;
-                    fishGroup2 += 20;
-
-                    Thread.sleep(500);
-                }
-
-                light2.low();
+                seaWHITE.low();
 
                 break;
 

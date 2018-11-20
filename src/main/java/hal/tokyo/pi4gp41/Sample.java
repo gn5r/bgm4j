@@ -32,13 +32,17 @@ public class Sample {
             BGMStart("level0");
 
             /*    ゲーム結果受信待機    */
-            while (true) {
-                Thread.sleep(1000);
-                if ((level = arduinoMega.read()) != 0) {
-                    break;
-                }
-            }
+//            while (true) {
+//                Thread.sleep(1000);
+//                if ((level = arduinoMega.read()) != 0) {
+//                    break;
+//                }
+//            }
 
+            System.out.println("ゲーム結果受信待機中...");
+            Thread.sleep(3000);
+            level = 1;
+            System.out.println("キレイドは1です");
             bgmPlayer.stopBGM();
 
             mainPerform();
@@ -89,7 +93,7 @@ public class Sample {
             case 0:
 
                 /*    レベルに応じたBGMの再生    */
-                BGMStart("level0");
+                BGMStart("level_0");
 
                 /*    照明点灯    海:赤*/
                 seaRED.high();
@@ -106,23 +110,27 @@ public class Sample {
             case 1:
 
                 /*    レベルに応じたBGMの再生    */
-                BGMStart("level1");
+                BGMStart("level_1");
 
                 /*    照明点灯
                       海:白
                       カニ:白    */
-                seaWHITE.high();
-                crabWHITE.high();
+//                seaWHITE.high();
+//                crabWHITE.high();
 
                 /*    BGMが終了するまで演出    */
-                seaWHITE.low();
-                crabWHITE.low();
+                while(bgmPlayer.getSize() != -1){
+                    ;
+                }
+                bgmPlayer.stopBGM();
+//                seaWHITE.low();
+//                crabWHITE.low();
                 break;
 
             case 2:
 
                 /*    レベルに応じたBGMの再生    */
-                BGMStart("level2");
+                BGMStart("level_2");
 
                 /*    照明点灯
                       海:白
@@ -139,7 +147,7 @@ public class Sample {
             case 3:
 
                 /*    レベルに応じたBGMの再生    */
-                BGMStart("level3");
+                BGMStart("level_3");
 
                 /*    照明点灯
                       海:白
@@ -203,7 +211,7 @@ public class Sample {
 
     /*    BGM再生。Threadは毎回インスタンスを生成する    */
     private static void BGMStart(String fileName) {
-        bgmPlayer = new BGMPlayer(fileName);
+        bgmPlayer = new BGMPlayer("BGM/" + fileName);
         bgmPlayer.musicPlay();
     }
 

@@ -26,7 +26,7 @@ public class Sample {
     private static int level;
 
     public static void main(String[] args) throws Exception {
-        Init();
+//        Init();
 
         while (true) {
             BGMStart("level0");
@@ -38,7 +38,6 @@ public class Sample {
 //                    break;
 //                }
 //            }
-
             System.out.println("ゲーム結果受信待機中...");
             Thread.sleep(3000);
             level = 1;
@@ -99,8 +98,12 @@ public class Sample {
                 seaRED.high();
 
                 /*    BGMが終了するまで演出    */
-                while (bgmPlayer.getSize() != -1) {
-                    ;
+                while (true) {
+                    Thread.sleep(1000);
+                    if (bgmPlayer.getSize() == -1) {
+                        bgmPlayer.stopBGM();
+                        break;
+                    }
                 }
 
                 /*    照明消灯    */
@@ -119,10 +122,13 @@ public class Sample {
 //                crabWHITE.high();
 
                 /*    BGMが終了するまで演出    */
-                while(bgmPlayer.getSize() != -1){
-                    ;
+                while (true) {
+                    Thread.sleep(1000);
+                    if (bgmPlayer.getSize() == -1) {
+                        bgmPlayer.stopBGM();
+                        break;
+                    }
                 }
-                bgmPlayer.stopBGM();
 //                seaWHITE.low();
 //                crabWHITE.low();
                 break;
@@ -139,6 +145,13 @@ public class Sample {
                 crabRED.high();
 
                 /*    BGMが終了するまで演出    */
+                while (true) {
+                    Thread.sleep(1000);
+                    if (bgmPlayer.getSize() == -1) {
+                        bgmPlayer.stopBGM();
+                        break;
+                    }
+                }
                 seaWHITE.low();
                 crabRED.low();
 
@@ -156,6 +169,13 @@ public class Sample {
                 crabRED.high();
 
                 /*    BGMが終了するまで演出    */
+                while (true) {
+                    Thread.sleep(1000);
+                    if (bgmPlayer.getSize() == -1) {
+                        bgmPlayer.stopBGM();
+                        break;
+                    }
+                }
                 seaWHITE.low();
                 crabRED.low();
 

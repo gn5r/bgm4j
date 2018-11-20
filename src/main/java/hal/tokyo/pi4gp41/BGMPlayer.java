@@ -25,15 +25,14 @@ public class BGMPlayer extends Thread {
     private DataLine.Info dataLine;
     private SourceDataLine boothBGM;
     private byte[] data;
-    private File file;
+    private final File file;
 
     private boolean flag;
-    
+
     private int size;
 
     public BGMPlayer(String fileName) {
         this.file = new File(fileName + ".wav");
-        this.size = -1;
     }
 
     @Override
@@ -47,6 +46,7 @@ public class BGMPlayer extends Thread {
             this.boothBGM = (SourceDataLine) AudioSystem.getLine(this.dataLine);
             this.boothBGM.open();
             this.boothBGM.start();
+            this.size = -1;
             this.data = new byte[this.boothBGM.getBufferSize()];
 
             while (true) {
@@ -54,14 +54,15 @@ public class BGMPlayer extends Thread {
 
                 if (this.size == -1) {
                     ais.close();
-                    ais = AudioSystem.getAudioInputStream(this.file);
-                    continue;
+                    break;
                 }
                 this.boothBGM.write(this.data, 0, size);
-                if (!flag) {
+                if (!this.flag) {
                     break;
                 }
             }
+            
+            this.size = -1;
 
         } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
             e.printStackTrace();
@@ -82,8 +83,8 @@ public class BGMPlayer extends Thread {
         this.boothBGM.close();
 
     }
-    
-    public int getSize(){
+
+    public int getSize() {
         return this.size;
     }
 }

@@ -22,16 +22,16 @@ public class Sample {
     private static BGMPlayer bgmPlayer;
 
     private static GpioController gpio;
-    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE;
+    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE, OEPin;
     private static int level;
 
-    private static int pwm1;
-    private static int pwm2;
-    private static int pwm3;
+    private static int coral1;
+    private static int coral2;
+    private static int coral3;
 
-    private static boolean b1;
-    private static boolean b2;
-    private static boolean b3;
+    private static boolean coral1_flg;
+    private static boolean coral2_flg;
+    private static boolean coral3_flg;
 
     public static void main(String[] args) throws Exception {
         /*    初期化    */
@@ -66,10 +66,7 @@ public class Sample {
         /*    GPIOのインスタンス取得    */
         gpio = GpioFactory.getInstance();
 
-        /*    ArduinoMegaとI2C通信用のインスタンスを生成
-                 引数はレジスタアドレス
-        
-         */
+        /*    ArduinoMegaとI2C通信用のインスタンスを生成    */
         arduinoMega = new ArduinoMega();
 
         /*    照明用ピン    
@@ -91,6 +88,10 @@ public class Sample {
 
         crabWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "Light4", PinState.LOW);
         crabWHITE.setShutdownOptions(true, PinState.LOW);
+
+        /*    モータードライバのOEピン サンゴLEDリセット時に使用    */
+        OEPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_27, "OE", PinState.LOW);
+        OEPin.setShutdownOptions(true, PinState.LOW);
 
         /*    サンゴLED用インスタンス生成    */
         pca9685 = new PCA9685();
@@ -212,60 +213,60 @@ public class Sample {
 
         switch (Sample.level) {
             case 1:
-                Sample.servo_write(8, pwm1);
+                Sample.servo_write(8, coral1);
                 break;
 
             case 2:
-                Sample.servo_write(8, pwm1);
+                Sample.servo_write(8, coral1);
                 Thread.sleep(50);
-                Sample.servo_write(9, pwm2);
+                Sample.servo_write(9, coral2);
                 break;
 
             case 3:
-                Sample.servo_write(8, pwm1);
-                Sample.servo_write(9, pwm2);
-                Sample.servo_write(10, pwm3);
+                Sample.servo_write(8, coral1);
+                Sample.servo_write(9, coral2);
+                Sample.servo_write(10, coral3);
                 break;
         }
 
-        if (pwm1 <= 4096 && b1 == false) {
-            pwm1 += 128;
-        } else if (b1 == true) {
-            pwm1 -= 128;
+        if (coral1 <= 4096 && coral1_flg == false) {
+            coral1 += 128;
+        } else if (coral1_flg == true) {
+            coral1 -= 128;
         }
-        if (pwm1 >= 4096 - 128) {
-            b1 = true;
+        if (coral1 >= 4096 - 128) {
+            coral1_flg = true;
         }
-        if (pwm1 <= 0) {
-            b1 = false;
-        }
-
-        if (pwm2 <= 4096 && b2 == false) {
-            pwm2 += 128;
-        } else if (b2 == true) {
-            pwm2 -= 128;
-        }
-        if (pwm2 >= 4096 - 128) {
-            b2 = true;
-        }
-        if (pwm2 <= 0) {
-            b2 = false;
+        if (coral1 <= 0) {
+            coral1_flg = false;
         }
 
-        if (pwm3 <= 4096 && b3 == false) {
-            pwm3 += 256;
-        } else if (b3 == true) {
-            pwm3 -= 256;
+        if (coral2 <= 4096 && coral2_flg == false) {
+            coral2 += 128;
+        } else if (coral2_flg == true) {
+            coral2 -= 128;
         }
-        if (pwm3 >= 4096 - 256) {
-            b3 = true;
+        if (coral2 >= 4096 - 128) {
+            coral2_flg = true;
         }
-        if (pwm3 <= 0) {
-            b3 = false;
+        if (coral2 <= 0) {
+            coral2_flg = false;
         }
 
-        System.out.println("pwm1:" + pwm1 + "\npwm2:" + pwm2 + "\npwm3:" + pwm3);
-        System.out.println("b1:" + b1 + "\nb2:" + b2 + "\nb3:" + b3);
+        if (coral3 <= 4096 && coral3_flg == false) {
+            coral3 += 256;
+        } else if (coral3_flg == true) {
+            coral3 -= 256;
+        }
+        if (coral3 >= 4096 - 256) {
+            coral3_flg = true;
+        }
+        if (coral3 <= 0) {
+            coral3_flg = false;
+        }
+
+        System.out.println("pwm1:" + coral1 + "\npwm2:" + coral2 + "\npwm3:" + coral3);
+        System.out.println("b1:" + coral1_flg + "\nb2:" + coral2_flg + "\nb3:" + coral3_flg);
     }
 
     /*    モータドライバ書き込みメソッド    */
@@ -286,19 +287,19 @@ public class Sample {
 
     /*    サンゴLEDリセットメソッド    */
     private static void resetCoralLED() {
-        /*    サンゴLEDをできるだけ弱く光らせる    */
-        servo_write(8, 10);
-        servo_write(9, 10);
-        servo_write(10, 10);
+        /*    モータードライバのOEピンをhighにすることでリセット    */
+        OEPin.high();
 
         /*    値初期化    */
-        pwm1 = 0;
-        pwm2 = 1024;
-        pwm3 = 2048;
+        coral1 = 0;
+        coral2 = 1024;
+        coral3 = 2048;
 
-        b1 = false;
-        b2 = false;
-        b3 = false;
+        coral1_flg = false;
+        coral2_flg = false;
+        coral3_flg = false;
+
+        OEPin.low();
     }
 
 }

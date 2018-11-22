@@ -220,9 +220,9 @@ public class Sample {
                     break;
 
                 case 3:
-                    Sample.servo_write(1, pwm1, 2048);
-                    Sample.servo_write(2, pwm2, 2048);
-                    Sample.servo_write(3, pwm3, 2048);
+                    Sample.servo_write(8, pwm1, 2048);
+                    Sample.servo_write(9, pwm2, 2048);
+                    Sample.servo_write(10, pwm3, 2048);
                     break;
             }
 

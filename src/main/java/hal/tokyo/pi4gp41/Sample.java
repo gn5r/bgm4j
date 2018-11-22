@@ -25,16 +25,17 @@ public class Sample {
     private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE;
     private static int level;
 
-    private static int pwm1 = 0;
-    private static int pwm2 = 1024;
-    private static int pwm3 = 2048;
+    private static int pwm1;
+    private static int pwm2;
+    private static int pwm3;
 
-    private static boolean b1 = false;
-    private static boolean b2 = false;
-    private static boolean b3 = false;
+    private static boolean b1;
+    private static boolean b2;
+    private static boolean b3;
 
     public static void main(String[] args) throws Exception {
-//        Init();
+        /*    初期化    */
+        Init();
 
         /*    サンゴLED用インスタンス生成    */
         pca9685 = new PCA9685();
@@ -42,12 +43,15 @@ public class Sample {
 
         while (true) {
             startBGM("Level_0");
-
             System.out.println("ゲーム結果受信待機中...");
-            Thread.sleep(3000);
-            Sample.level = 3;
-            System.out.println("キレイドは1です");
 
+            while (true) {
+                Thread.sleep(1000);
+                if (arduinoMega.read() != 0) {
+                    level = arduinoMega.read() - 1;
+                    break;
+                }
+            }
             bgmPlayer.stopBGM();
             deleteBGM();
             Thread.sleep(1000);
@@ -62,8 +66,7 @@ public class Sample {
         /*    GPIOのインスタンス取得    */
         gpio = GpioFactory.getInstance();
 
-        /*    ArduinoMegaとI2C通信用のインスタンスを生成    
-        
+        /*    ArduinoMegaとI2C通信用のインスタンスを生成
                  引数はレジスタアドレス
         
          */
@@ -93,6 +96,9 @@ public class Sample {
         pca9685 = new PCA9685();
         pca9685.setPWMFreq(60);
 
+        /*    サンゴ用LEDの値初期化    */
+        resetCoralLED();
+
     }
 
     /*    メイン演出メソッド    */
@@ -102,12 +108,11 @@ public class Sample {
 
         switch (Sample.level) {
             case 0:
-
                 /*    レベルに応じたBGMの再生    */
                 startBGM("Level_0");
 
                 /*    照明点灯    海:赤*/
-//                seaRED.high();
+                seaRED.high();
 
                 /*    BGMが終了するまで演出    */
                 while (true) {
@@ -118,34 +123,29 @@ public class Sample {
                 }
 
                 /*    照明消灯    */
-//                seaRED.low();
+                seaRED.low();
                 break;
 
             case 1:
-
                 /*    レベルに応じたBGMの再生    */
                 startBGM("Level_1");
 
                 /*    照明点灯
                       海:白
                       カニ:白    */
-//                seaWHITE.high();
-//                crabWHITE.high();
+                seaWHITE.high();
+                crabWHITE.high();
 
                 /*    BGMが終了するまで演出    */
                 while (true) {
                     Thread.sleep(1000);
                     if (bgmPlayer.getSize() == -1) {
-//                        coralLEDOFF(1);
-//                        deleteCoral(1);
                         break;
                     }
                     LEDON();
-
-//                    coralLEDON(1, 0, 1024, 6);                    
                 }
-//                seaWHITE.low();
-//                crabWHITE.low();
+                seaWHITE.low();
+                crabWHITE.low();
                 break;
 
             case 2:
@@ -172,15 +172,14 @@ public class Sample {
                 break;
 
             case 3:
-
                 /*    レベルに応じたBGMの再生    */
                 startBGM("Level_3");
 
                 /*    照明点灯
                       海:白
                       カニ:RED    */
-//                seaWHITE.high();
-//                crabRED.high();
+                seaWHITE.high();
+                crabRED.high();
 
                 /*    BGMが終了するまで演出    */
                 while (true) {
@@ -188,10 +187,10 @@ public class Sample {
                         break;
                     }
                     LEDON();
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 }
-//                seaWHITE.low();
-//                crabRED.low();
+                seaWHITE.low();
+                crabRED.low();
                 break;
 
             default:
@@ -201,27 +200,31 @@ public class Sample {
         /*    BGM停止    */
         bgmPlayer.stopBGM();
         deleteBGM();
+
+        /*    サンゴリセット    */
+        resetCoralLED();
     }
 
+    /*    サンゴLED点灯メソッド    */
     private static void LEDON() throws InterruptedException {
 
         System.out.println("Coral LED ON");
 
         switch (Sample.level) {
             case 1:
-                Sample.servo_write(1, pwm1, 4096);
+                Sample.servo_write(8, pwm1);
                 break;
 
             case 2:
-                Sample.servo_write(1, pwm1, 4096);
+                Sample.servo_write(8, pwm1);
                 Thread.sleep(50);
-                Sample.servo_write(2, pwm2, 4096);
+                Sample.servo_write(9, pwm2);
                 break;
 
             case 3:
-                Sample.servo_write(8, pwm1, 4096);
-                Sample.servo_write(9, pwm2, 4096);
-                Sample.servo_write(10, pwm3, 4096);
+                Sample.servo_write(8, pwm1);
+                Sample.servo_write(9, pwm2);
+                Sample.servo_write(10, pwm3);
                 break;
         }
 
@@ -262,18 +265,12 @@ public class Sample {
         }
 
         System.out.println("pwm1:" + pwm1 + "\npwm2:" + pwm2 + "\npwm3:" + pwm3);
-        System.out.println("b1:" + b1 + "\nb2:" + b2 + "\nb3:" + b3 );
+        System.out.println("b1:" + b1 + "\nb2:" + b2 + "\nb3:" + b3);
     }
 
-    /*    サンゴLED点灯パターンメソッド    */
-    public static void servo_write(int ch, int ang, int maxValue) {
-//        ang = (int) map(ang, 0, maxValue, 150, 600);
+    /*    モータドライバ書き込みメソッド    */
+    public static void servo_write(int ch, int ang) {
         pca9685.setPWM(ch, 0, ang);
-    }
-
-    /*    Arduino IDEでのmap関数    */
-    private static long map(long x, long in_min, long in_max, long out_min, long out_max) {
-        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
     /*    BGM再生。Threadは毎回インスタンスを生成する    */
@@ -285,6 +282,23 @@ public class Sample {
     /*    古いBGMPlayerインスタンスを削除    */
     private static void deleteBGM() {
         Sample.bgmPlayer = null;
+    }
+
+    /*    サンゴLEDリセットメソッド    */
+    private static void resetCoralLED() {
+        /*    サンゴLEDをできるだけ弱く光らせる    */
+        servo_write(8, 10);
+        servo_write(9, 10);
+        servo_write(10, 10);
+
+        /*    値初期化    */
+        pwm1 = 0;
+        pwm2 = 1024;
+        pwm3 = 2048;
+
+        b1 = false;
+        b2 = false;
+        b3 = false;
     }
 
 }

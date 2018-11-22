@@ -2,7 +2,7 @@
 MSラズパイプログラム
 
 <div align="center">
-  <img src="https://github.com/gn5r/pi4gp41/img/pin.png" "Raspberry Pi3 ピン配列">
+  <img src="./img/pin.png">
 </div>
 
 更新履歴

@@ -20,7 +20,6 @@ public class Sample {
     private static PCA9685 pca9685;
     private static ArduinoMega arduinoMega;
     private static BGMPlayer bgmPlayer;
-    private static CoralLEDThread coralLED1, coralLED2, coralLED3;
 
     private static GpioController gpio;
     private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE;
@@ -93,7 +92,7 @@ public class Sample {
 
         System.out.println("main Performance");
         boolean flag = true;
-        
+
         switch (Sample.level) {
             case 0:
 
@@ -127,7 +126,6 @@ public class Sample {
 //                crabWHITE.high();
 
                 /*    BGMが終了するまで演出    */
-                
                 while (true) {
                     Thread.sleep(1000);
                     if (bgmPlayer.getSize() == -1) {
@@ -203,44 +201,35 @@ public class Sample {
     }
 
     private static void LEDON(boolean flag) throws InterruptedException {
-        int n = 0;
+        int pwm1 = 0;
+        int pwm2 = 512;
+        int pwm3 = 2048;
+
         boolean b = false;
 
         while (true) {
             switch (Sample.level) {
                 case 1:
-                    Sample.servo_write(1, n, 2048);
+                    Sample.servo_write(1, pwm1, 2048);
                     break;
 
                 case 2:
-                    Sample.servo_write(1, n, 2048);
+                    Sample.servo_write(1, pwm1, 2048);
                     Thread.sleep(50);
-                    Sample.servo_write(2, n, 2048);
+                    Sample.servo_write(2, pwm2, 2048);
                     break;
 
                 case 3:
-                    Sample.servo_write(1, n, 2048);
-                    Thread.sleep(5);
-                    Sample.servo_write(2, n, 2048);
-                    Thread.sleep(10);
-                    Sample.servo_write(3, n, 2048);
-                    Thread.sleep(5);
+                    Sample.servo_write(1, pwm1, 2048);
+                    Sample.servo_write(2, pwm2, 2048);
+                    Sample.servo_write(3, pwm3, 2048);
                     break;
             }
-            if (n <= 2048 && b == false) {
-                n = n + 32;
-            } else if (b == true) {
-                n = n - 32;
-            }
 
-            if (n >= 2048) {
-                b = true;
-            }
-            if (n <= 0) {
-                b = false;
-            }
+            pwmCalc(pwm1, 2048);
+            pwmCalc(pwm2, 2048);
+            pwmCalc(pwm3, 2048);
 
-            System.out.println("value:" + String.valueOf(n));
             if (!flag) {
                 break;
             }
@@ -248,7 +237,6 @@ public class Sample {
     }
 
     /*    サンゴLED点灯パターンメソッド    */
- /*    引数にピン番号 角度    */
     public static void servo_write(int ch, int ang, int maxValue) {
         ang = (int) map(ang, 0, maxValue, 150, 600);
         pca9685.setPWM(ch, 0, ang);
@@ -265,65 +253,36 @@ public class Sample {
         bgmPlayer.musicPlay();
     }
 
-    /*    delete old BGMPlayer instance    */
+    /*    古いBGMPlayerインスタンスを削除    */
     private static void deleteBGM() {
         Sample.bgmPlayer = null;
     }
 
-    /*    coralLED ON    */
-    private static void coralLEDON(int coralNum, int pwmValue, int maxVale, int ch) {
+    private static void pwmCalc(int pwm, int max) {
 
-        switch (coralNum) {
-            case 1:
-                coralLED1 = new CoralLEDThread(pwmValue, maxVale, ch);
-                coralLED1.LEDON();
-                break;
-            case 2:
-                coralLED2 = new CoralLEDThread(pwmValue, maxVale, ch);
-                coralLED2.LEDON();
-                break;
-            case 3:
-                coralLED3 = new CoralLEDThread(pwmValue, maxVale, ch);
-                coralLED3.LEDON();
-                break;
-
-            default:
-                break;
+        if (pwm <= max) {
+            pwm += 16;
+        } else if (pwm >= max) {
+            pwm -= 16;
         }
     }
 
-    private static void coralLEDOFF(int coralNum) {
-        switch (coralNum) {
-            case 1:
-                coralLED1.LEDOFF();
-                break;
-            case 2:
-                coralLED2.LEDOFF();
-                break;
-            case 3:
-                coralLED3.LEDOFF();
-                break;
+    private void calc() {
 
-            default:
-                break;
+        int n = 0;
+        boolean b = false;
+
+        if (n <= 2048 && b == false) {
+            n = n + 32;
+        } else if (b == true) {
+            n = n - 32;
         }
-    }
 
-    /*    delete old BGMPlayer instance    */
-    private static void deleteCoral(int coralNum) {
-        switch (coralNum) {
-            case 1:
-                coralLED1 = null;
-                break;
-            case 2:
-                coralLED2 = null;
-                break;
-            case 3:
-                coralLED3 = null;
-                break;
-
-            default:
-                break;
+        if (n >= 2048) {
+            b = true;
+        }
+        if (n <= 0) {
+            b = false;
         }
     }
 

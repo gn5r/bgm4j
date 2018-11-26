@@ -60,7 +60,7 @@ public class Sample {
             bgmPlayer.stopBGM();
             System.out.println("BGM stop");
 
-            /*    OEピンlow、海照明、カニLEDを消灯    */
+            /*    OEピンlow、海照明を消灯    */
             OEPin.low();
             seaRED.low();
 

@@ -42,7 +42,7 @@ public class Sample {
         pca9685.setPWMFreq(60);
 
         while (true) {
-            /*    海照明とカニLEDを赤点灯させる    */
+            /*    海照明を赤点灯させる    */
             seaRED.high();
             System.out.println("BGM start");
             startBGM("Level_0");
@@ -65,7 +65,6 @@ public class Sample {
             seaRED.low();
 
             Thread.sleep(500);
-
             mainPerform();
 
             /*    OEピンをHihgにして、サンゴLEDを消灯    */
@@ -83,11 +82,10 @@ public class Sample {
         /*    ArduinoMegaとI2C通信用のインスタンスを生成    */
         arduinoMega = new ArduinoMega();
 
-        /*    照明用ピン    
-        
-        seaRED:海全体 白
-        seaWHITE:海 赤
-        crabRED:カニ本体 赤
+        /*    照明用ピン        
+            seaRED:海全体 白
+            seaWHITE:海 赤
+            crabRED:カニ本体 赤
          */
         seaRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_22, "Light1", PinState.LOW);
         seaRED.setShutdownOptions(true, PinState.LOW);

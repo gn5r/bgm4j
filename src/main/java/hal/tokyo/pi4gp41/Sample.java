@@ -42,22 +42,35 @@ public class Sample {
         pca9685.setPWMFreq(60);
 
         while (true) {
+            /*    海照明とカニLEDを赤点灯させる    */
+            seaRED.high();
+            crabRED.high();
             System.out.println("BGM start");
             startBGM("Level_0");
             System.out.println("ゲーム結果受信待機中...");
 
+            /*    Megaから0以外の値を受け取るまでループ    */
             while (true) {
                 if (arduinoMega.read() != 0) {
                     level = arduinoMega.read() - 1;
                     break;
                 }
             }
+            
             Thread.sleep(1000);
-            bgmPlayer.stopBGM();
+            bgmPlayer.stopBGM();            
             System.out.println("BGM stop");
+            
+            /*    OEピンlow、海照明、カニLEDを消灯    */
             OEPin.low();
-            Thread.sleep(1000);
+            seaRED.low();
+            crabRED.low();
+            
+            Thread.sleep(500);
+            
             mainPerform();
+            
+            /*    OEピンをHihgにして、サンゴLEDを消灯    */
             OEPin.high();
             System.out.println("次のゲームへ移行します。");
             Thread.sleep(2000);
@@ -74,10 +87,10 @@ public class Sample {
 
         /*    照明用ピン    
         
-        light1:ブース全体 白
-        light2:ブース全体 赤
-        light3:カニ本体 白
-        light4:カニ本体 赤
+        seaRED:海全体 白
+        seaWHITE:海 赤
+        crabRED:カニ本体 白
+        crabWHITE:カニ本体 赤
         
          */
         seaRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_22, "Light1", PinState.LOW);
@@ -86,10 +99,10 @@ public class Sample {
         seaWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_23, "Light2", PinState.LOW);
         seaWHITE.setShutdownOptions(true, PinState.LOW);
 
-        crabRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_24, "Light3", PinState.LOW);
+        crabRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_24, "crabLED1", PinState.LOW);
         crabRED.setShutdownOptions(true, PinState.LOW);
 
-        crabWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "Light4", PinState.LOW);
+        crabWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "crabLED2", PinState.LOW);
         crabWHITE.setShutdownOptions(true, PinState.LOW);
 
         /*    モータードライバのOEピン サンゴLEDリセット時に使用    */
@@ -115,8 +128,11 @@ public class Sample {
                 /*    レベルに応じたBGMの再生    */
                 startBGM("Level_0");
 
-                /*    照明点灯    海:赤*/
+                /*    照明点灯
+                      海:赤
+                      カニ:赤    */
                 seaRED.high();
+                crabRED.high();
 
                 /*    BGMが終了するまで演出    */
                 while (true) {
@@ -128,6 +144,7 @@ public class Sample {
 
                 /*    照明消灯    */
                 seaRED.low();
+                crabRED.low();
                 break;
 
             case 1:

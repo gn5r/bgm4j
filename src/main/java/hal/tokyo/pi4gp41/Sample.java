@@ -44,7 +44,6 @@ public class Sample {
         while (true) {
             /*    海照明とカニLEDを赤点灯させる    */
             seaRED.high();
-            crabRED.high();
             System.out.println("BGM start");
             startBGM("Level_0");
             System.out.println("ゲーム結果受信待機中...");
@@ -64,7 +63,6 @@ public class Sample {
             /*    OEピンlow、海照明、カニLEDを消灯    */
             OEPin.low();
             seaRED.low();
-            crabRED.low();
 
             Thread.sleep(500);
 
@@ -125,9 +123,8 @@ public class Sample {
 
                 /*    照明点灯
                       海:赤
-                      カニ:赤    */
+                      カニ:無点灯    */
                 seaRED.high();
-                crabRED.high();
 
                 /*    BGMが終了するまで演出    */
                 while (true) {
@@ -139,7 +136,6 @@ public class Sample {
 
                 /*    照明消灯    */
                 seaRED.low();
-                crabRED.low();
                 break;
 
             case 1:

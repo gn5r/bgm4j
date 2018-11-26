@@ -22,7 +22,7 @@ public class Sample {
     private static BGMPlayer bgmPlayer;
 
     private static GpioController gpio;
-    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, crabWHITE, OEPin;
+    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED,OEPin;
     private static int level;
 
     private static int coral1;
@@ -89,7 +89,6 @@ public class Sample {
         
         seaRED:海全体 白
         seaWHITE:海 赤
-        crabRED:カニ本体 白
         crabWHITE:カニ本体 赤
         
          */
@@ -101,9 +100,6 @@ public class Sample {
 
         crabRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_24, "crabLED1", PinState.LOW);
         crabRED.setShutdownOptions(true, PinState.LOW);
-
-        crabWHITE = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "crabLED2", PinState.LOW);
-        crabWHITE.setShutdownOptions(true, PinState.LOW);
 
         /*    モータードライバのOEピン サンゴLEDリセット時に使用    */
         OEPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_27, "OE", PinState.LOW);
@@ -155,7 +151,6 @@ public class Sample {
                       海:白
                       カニ:白    */
                 seaWHITE.high();
-                crabWHITE.high();
 
                 /*    BGMが終了するまで演出    */
                 while (true) {
@@ -166,7 +161,6 @@ public class Sample {
                     LEDON();
                 }
                 seaWHITE.low();
-                crabWHITE.low();
                 break;
 
             case 2:
@@ -176,7 +170,7 @@ public class Sample {
 
                 /*    照明点灯
                       海:白
-                      カニ:RED    */
+                      カニ:赤    */
                 seaWHITE.high();
                 crabRED.high();
 
@@ -198,7 +192,7 @@ public class Sample {
 
                 /*    照明点灯
                       海:白
-                      カニ:RED    */
+                      カニ:赤    */
                 seaWHITE.high();
                 crabRED.high();
 

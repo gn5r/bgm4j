@@ -22,7 +22,7 @@ public class Sample {
     private static BGMPlayer bgmPlayer;
 
     private static GpioController gpio;
-    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED,OEPin;
+    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, OEPin;
     private static int level;
 
     private static int coral1;
@@ -56,20 +56,20 @@ public class Sample {
                     break;
                 }
             }
-            
+
             Thread.sleep(1000);
-            bgmPlayer.stopBGM();            
+            bgmPlayer.stopBGM();
             System.out.println("BGM stop");
-            
+
             /*    OEピンlow、海照明、カニLEDを消灯    */
             OEPin.low();
             seaRED.low();
             crabRED.low();
-            
+
             Thread.sleep(500);
-            
+
             mainPerform();
-            
+
             /*    OEピンをHihgにして、サンゴLEDを消灯    */
             OEPin.high();
             System.out.println("次のゲームへ移行します。");
@@ -89,8 +89,7 @@ public class Sample {
         
         seaRED:海全体 白
         seaWHITE:海 赤
-        crabWHITE:カニ本体 赤
-        
+        crabRED:カニ本体 赤
          */
         seaRED = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_22, "Light1", PinState.LOW);
         seaRED.setShutdownOptions(true, PinState.LOW);
@@ -149,7 +148,7 @@ public class Sample {
 
                 /*    照明点灯
                       海:白
-                      カニ:白    */
+                      カニ:無点灯    */
                 seaWHITE.high();
 
                 /*    BGMが終了するまで演出    */

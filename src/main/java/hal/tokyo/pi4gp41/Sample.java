@@ -20,6 +20,7 @@ public class Sample {
     private static PCA9685 pca9685;
     private static ArduinoMega arduinoMega;
     private static BGMPlayer bgmPlayer;
+    private static StartBGM startBGM;
 
     private static GpioController gpio;
     private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, OEPin;
@@ -45,7 +46,7 @@ public class Sample {
             /*    海照明を赤点灯させる    */
             seaRED.high();
             System.out.println("BGM start");
-            startBGM("Level_0");
+            startBGM();
             System.out.println("ゲーム結果受信待機中...");
 
             /*    Megaから0以外の値を受け取るまでループ    */
@@ -57,7 +58,7 @@ public class Sample {
             }
 
             Thread.sleep(1000);
-            bgmPlayer.stopBGM();
+            startBGM.stopBGM();
             System.out.println("BGM stop");
 
             /*    OEピンlow、海照明を消灯    */
@@ -117,7 +118,7 @@ public class Sample {
         switch (Sample.level) {
             case 0:
                 /*    レベルに応じたBGMの再生    */
-                startBGM("Level_0");
+                performBGM("Level_0");
 
                 /*    照明点灯
                       海:赤
@@ -138,7 +139,7 @@ public class Sample {
 
             case 1:
                 /*    レベルに応じたBGMの再生    */
-                startBGM("Level_1");
+                performBGM("Level_1");
 
                 /*    照明点灯
                       海:白
@@ -159,7 +160,7 @@ public class Sample {
             case 2:
 
                 /*    レベルに応じたBGMの再生    */
-                startBGM("Level_2");
+                performBGM("Level_2");
 
                 /*    照明点灯
                       海:白
@@ -181,7 +182,7 @@ public class Sample {
 
             case 3:
                 /*    レベルに応じたBGMの再生    */
-                startBGM("Level_3");
+                performBGM("Level_3");
 
                 /*    照明点灯
                       海:白
@@ -280,8 +281,14 @@ public class Sample {
         pca9685.setPWM(ch, 0, ang);
     }
 
-    /*    BGM再生。Threadは毎回インスタンスを生成する    */
-    private static void startBGM(String fileName) {
+    /*    初期状態、ゲーム中BGM再生    */
+    private static void startBGM() {
+        startBGM = new StartBGM();
+        startBGM.musicPlay();
+    }
+
+    /*    演出BGM再生。Threadは毎回インスタンスを生成する    */
+    private static void performBGM(String fileName) {
         bgmPlayer = new BGMPlayer("BGM/" + fileName);
         bgmPlayer.musicPlay();
     }

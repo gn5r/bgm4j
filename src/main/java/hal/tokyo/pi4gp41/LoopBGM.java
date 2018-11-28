@@ -18,7 +18,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 /**
  * @author gn5r
  */
-public class loopBGM extends Thread {
+public class LoopBGM extends Thread {
 
     private AudioInputStream ais;
     private DataLine.Info dataLine;
@@ -30,7 +30,7 @@ public class loopBGM extends Thread {
 
     private int size;
 
-    public loopBGM(String fileName) {
+    public LoopBGM(String fileName) {
         this.file = new File("BGM/" + fileName + ".wav");
     }
 

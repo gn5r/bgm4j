@@ -19,7 +19,7 @@ public class Sample {
     private static PCA9685 pca9685;
     private static ArduinoMega arduinoMega;
     private static BGMPlayer bgmPlayer;
-    private static loopBGM loopBGM;
+    private static LoopBGM loopBGM;
 
     private static GpioController gpio;
     private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, OEPin;
@@ -291,7 +291,7 @@ public class Sample {
 
     /*    初期状態、ゲーム中BGM再生    */
     private static void startBGM(String fileName) {
-        loopBGM = new loopBGM(fileName);
+        loopBGM = new LoopBGM(fileName);
         loopBGM.musicPlay();
     }
 

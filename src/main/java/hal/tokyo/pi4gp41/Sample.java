@@ -48,7 +48,6 @@ public class Sample {
 
             /*    ゲームが開始されたらBGMを停止し、ゲーム中BGMに切り替える    */
             loopBGM.stopBGM();
-            Thread.sleep(1000);
             startBGM("game_mode");
 
             System.out.println("ゲーム結果受信待機中...");
@@ -68,13 +67,11 @@ public class Sample {
             OEPin.low();
             seaRED.low();
 
-            Thread.sleep(1000);
             mainPerform(level);
 
             /*    OEピンをHihgにして、サンゴLEDを消灯    */
             OEPin.high();
             System.out.println("次のゲームへ移行します。");
-            Thread.sleep(2000);
         }
     }
 

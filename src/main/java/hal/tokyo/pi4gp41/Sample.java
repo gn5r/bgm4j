@@ -23,7 +23,6 @@ public class Sample {
 
     private static GpioController gpio;
     private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, OEPin;
-    private static int level;
 
     private static int coral1;
     private static int coral2;
@@ -36,6 +35,7 @@ public class Sample {
     public static void main(String[] args) throws Exception {
         /*    初期化    */
         Init();
+        int level;
 
         while (true) {
             /*    海照明を赤点灯させる    */
@@ -47,8 +47,8 @@ public class Sample {
             while(true) if (arduinoMega.read() == 5) break;
 
             /*    ゲームが開始されたらBGMを停止し、ゲーム中BGMに切り替える    */
-            Thread.sleep(1000);
             loopBGM.stopBGM();
+            Thread.sleep(1000);
             startBGM("game_mode");
 
             System.out.println("ゲーム結果受信待機中...");
@@ -62,15 +62,14 @@ public class Sample {
             }
 
             /*    BGM停止、メイン演出へ移行    */
-            Thread.sleep(1000);
             loopBGM.stopBGM();
 
             /*    OEピンlow、海照明を消灯    */
             OEPin.low();
             seaRED.low();
 
-            Thread.sleep(500);
-            mainPerform();
+            Thread.sleep(1000);
+            mainPerform(level);
 
             /*    OEピンをHihgにして、サンゴLEDを消灯    */
             OEPin.high();
@@ -119,11 +118,11 @@ public class Sample {
     }
 
     /*    メイン演出メソッド    */
-    private static void mainPerform() throws Exception {
+    private static void mainPerform(int level) throws Exception {
 
         System.out.println("main Performance");
 
-        switch (Sample.level) {
+        switch (level) {
             case 0:
                 /*    レベルに応じたBGMの再生    */
                 performBGM("Level_0");
@@ -160,7 +159,8 @@ public class Sample {
                     if (bgmPlayer.getSize() == -1) {
                         break;
                     }
-                    LEDON();
+                    LEDON(1);
+                    Thread.sleep(50);
                 }
                 seaWHITE.low();
                 break;
@@ -182,6 +182,8 @@ public class Sample {
                     if (bgmPlayer.getSize() == -1) {
                         break;
                     }
+                    LEDON(2);
+                    Thread.sleep(50);
                 }
                 seaWHITE.low();
                 crabRED.low();
@@ -203,7 +205,7 @@ public class Sample {
                     if (bgmPlayer.getSize() == -1) {
                         break;
                     }
-                    LEDON();
+                    LEDON(3);
                     Thread.sleep(50);
                 }
                 seaWHITE.low();
@@ -222,11 +224,11 @@ public class Sample {
     }
 
     /*    サンゴLED点灯メソッド    */
-    private static void LEDON() throws InterruptedException {
+    private static void LEDON(int level) throws InterruptedException {
 
         System.out.println("Coral LED ON");
 
-        switch (Sample.level) {
+        switch (level) {
             case 1:
                 Sample.servo_write(8, coral1);
                 break;
@@ -242,6 +244,8 @@ public class Sample {
                 Sample.servo_write(9, coral2);
                 Sample.servo_write(10, coral3);
                 break;
+
+                default:break;
         }
 
         if (coral1 <= 4096 && coral1_flg == false) {

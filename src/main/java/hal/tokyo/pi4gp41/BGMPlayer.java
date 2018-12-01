@@ -16,7 +16,6 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
- *
  * @author gn5r
  */
 public class BGMPlayer extends Thread {
@@ -32,7 +31,7 @@ public class BGMPlayer extends Thread {
     private int size;
 
     public BGMPlayer(String fileName) {
-        this.file = new File(fileName + ".wav");
+        this.file = new File("BGM/" + fileName + ".wav");
     }
 
     @Override
@@ -61,7 +60,7 @@ public class BGMPlayer extends Thread {
                     break;
                 }
             }
-            
+
             this.size = -1;
 
         } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {

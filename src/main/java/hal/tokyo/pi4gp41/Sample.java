@@ -22,7 +22,7 @@ public class Sample {
     private static LoopBGM loopBGM;
 
     private static GpioController gpio;
-    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, OEPin;
+    private static GpioPinDigitalOutput seaRED, seaWHITE, crabRED, OEPin, mirrorBall;
 
     private static int coral1;
     private static int coral2;
@@ -44,7 +44,7 @@ public class Sample {
             startBGM("Level_0");
 
             /*    ゲーム待機中    */
-            while(true) if (arduinoMega.read() == 5) break;
+            while (true) if (arduinoMega.read() == 5) break;
 
             /*    ゲームが開始されたらBGMを停止し、ゲーム中BGMに切り替える    */
             loopBGM.stopBGM();
@@ -104,6 +104,10 @@ public class Sample {
         /*    モータードライバのOEピン サンゴLEDリセット時に使用    */
         OEPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_27, "OE", PinState.LOW);
         OEPin.setShutdownOptions(true, PinState.LOW);
+
+        /*    ミラーボールピン    */
+        mirrorBall = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "mirrorBall", PinState.LOW);
+        mirrorBall.setShutdownOptions(true, PinState.LOW);
 
         /*    サンゴLED用インスタンス生成    */
         pca9685 = new PCA9685();
@@ -197,6 +201,9 @@ public class Sample {
                 seaWHITE.high();
                 crabRED.high();
 
+                /*    ミラーボール点灯    */
+                mirrorBall.high();
+
                 /*    BGMが終了するまで演出    */
                 while (true) {
                     if (bgmPlayer.getSize() == -1) {
@@ -205,8 +212,10 @@ public class Sample {
                     LEDON(3);
                     Thread.sleep(50);
                 }
+
                 seaWHITE.low();
                 crabRED.low();
+                mirrorBall.low();
                 break;
 
             default:
@@ -242,7 +251,8 @@ public class Sample {
                 Sample.servo_write(10, coral3);
                 break;
 
-                default:break;
+            default:
+                break;
         }
 
         if (coral1 <= 4096 && coral1_flg == false) {

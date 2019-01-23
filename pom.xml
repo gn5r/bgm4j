@@ -27,7 +27,7 @@
                     <archive>
                         <manifest>
                             <!--     実行させるMainクラスを指定     -->
-                            <mainClass>hal.tokyo.pi4gp41.Sample</mainClass>
+                            <mainClass>hal.tokyo.pi4gp41.Demo</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
